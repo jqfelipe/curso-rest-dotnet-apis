@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ProductsApi.Models;
+using Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,38 +19,43 @@ namespace ProductsApi.Controllers
 
     private readonly ILogger<ProductsController> _logger;
     //private readonly AdventureWorksDbContext _context;
-    private readonly object[] _products;
+    private readonly ProductRepository _productRepository;
 
     public ProductsController(ILogger<ProductsController> logger
-      , object[] products
+      , ProductRepository productRepository
         //, AdventureWorksDbContext context
         )
     {
       _logger = logger;
       //_context = context; 
       _logger.LogInformation("Constructor products");
-      _products = products;
+      _productRepository = productRepository;
     }
 
     // GET: api/<ProductsController>
     [HttpGet]
-    public IEnumerable<object> Get()
+    public IEnumerable<Product> Get()
     {
-      return _products;
+      return _productRepository.Get();
     }
 
     // GET api/<ProductsController>/5
     [HttpGet("{id}")]
-    public IActionResult Get(int id)
+    public IActionResult GetById(int id)
     {
-      return Ok(_products[0]);
+      var result = _productRepository.Get(id);
+      if (result == null)
+        return NotFound();
+
+      return Ok(result);
     }
 
     // POST api/<ProductsController>
     [HttpPost]
-    public void Post([FromBody] Product value)
+    public IActionResult Post([FromBody] Product value)
     {
-      //return CreatedAtAction(nameof(GetById), new { Id = value.Id }, value);
+      Product result = _productRepository.Add(value);
+      return CreatedAtAction(nameof(GetById), new { Id = result.Id }, value);
     }
 
     // PUT api/<ProductsController>/5
@@ -62,6 +68,11 @@ namespace ProductsApi.Controllers
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
+      var result = _productRepository.Get(id);
+      if (result == null)
+        return NotFound();
+
+      _productRepository.Delete(id);
       return new ObjectResult(new object()) { StatusCode = (int)HttpStatusCode.NotImplemented };
     }
   }

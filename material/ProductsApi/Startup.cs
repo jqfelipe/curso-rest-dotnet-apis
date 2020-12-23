@@ -27,8 +27,17 @@ namespace ProductsApi
     public void ConfigureServices(IServiceCollection services)
     {
 
-      services.AddSingleton<object[]>(new[] { new Models.Product { Id = 1, Name = "Pants" } });
-
+      services.AddTransient<Repositories.ProductRepository>();
+      services.AddCors(options =>
+      {
+        options.AddPolicy(name: "CORS", builder =>
+        {
+          builder.WithOrigins("https://localhost:81")
+          .AllowAnyHeader()
+          .AllowAnyMethod()
+          .AllowCredentials();
+        });
+      });
       services.AddControllers();
       services.AddSwaggerGen(c =>
       {
@@ -49,6 +58,7 @@ namespace ProductsApi
       app.UseHttpsRedirection();
 
       app.UseRouting();
+      app.UseCors("CORS");
 
       app.UseAuthorization();
 
