@@ -28,18 +28,19 @@ namespace ProductsApi
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddDbContext<AdventureWorksDbContext>(builder => {
+      services.AddDbContext<AdventureworksContext>(builder => {
 
-        var options = builder.UseInMemoryDatabase("FakeDatabase");
+        //var options = builder.UseInMemoryDatabase("FakeDatabase");
+        var connection = Configuration.GetConnectionString("DefaultConnection");
+        var dbOptions = new DbContextOptionsBuilder<AdventureworksContext>()
+                           //.UseInMemoryDatabase("FakeDatabase").Options;
+                           .UseSqlServer(connection).Options;
 
-        var dbOptions = new DbContextOptionsBuilder<AdventureWorksDbContext>()
-                           .UseInMemoryDatabase("FakeDatabase").Options;
-
-        using var db = new AdventureWorksDbContext(dbOptions);
+        using var db = new AdventureworksContext(dbOptions);
         db.Database.EnsureCreated();
       });
 
-      services.AddScoped<AdventureWorksDbContext>();
+      services.AddScoped<AdventureworksContext>();
       services.AddScoped<Repositories.ProductRepository>();
       services.AddCors(options =>
       {

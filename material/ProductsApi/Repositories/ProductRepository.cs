@@ -6,8 +6,8 @@ namespace Repositories
 {
   public class ProductRepository
   {
-    private readonly AdventureWorksDbContext _context;
-    public ProductRepository(AdventureWorksDbContext context)
+    private readonly AdventureworksContext _context;
+    public ProductRepository(AdventureworksContext context)
     {
       _context = context;      
     }

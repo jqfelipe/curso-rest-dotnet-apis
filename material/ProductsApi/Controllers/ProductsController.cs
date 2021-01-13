@@ -55,7 +55,7 @@ namespace ProductsApi.Controllers
     public IActionResult Post([FromBody] Product value)
     {
       Product result = _productRepository.Add(value);
-      return CreatedAtAction(nameof(GetById), new { Id = result.Id }, value);
+      return CreatedAtAction(nameof(GetById), new { Id = result.ProductId }, value);
     }
 
     // PUT api/<ProductsController>/5
